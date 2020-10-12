@@ -11,7 +11,8 @@
 ; homework 6.
 ;*******************************************************************
 
-
+	AREA DATA
+A	SPACE 7 ; 6 characters/bytes of space + an ending byte for null-termination
 
 	AREA    |.text|, CODE, READONLY, ALIGN=2
 	THUMB
@@ -34,10 +35,11 @@ Start
 	; into it and returns the result.
 	BL CalculateProductOfEightIntegers
 	; Question 2 Testing
-	MOV R0, #4 ; 4 corresponds to letter E
-	MOV R1, #5 ; Shift by 5 letters
-	; This will shift the letter in R0 by
-	; R1, so E should become J.
+	; Lets initialize our string!
+	BL InitializeString
+	LDR R0, =A ; Load address of beginning of string into R0
+	MOV R1, #3 ; We have a shift value of 3
+	; This will shift the string in R0 by R1.
 	BL CaesarShift
 	; Question 3 Testing
 	MOV R0, #25 ; Age of 25
@@ -57,6 +59,26 @@ Start
 	; R1).
 	BL GetHammingDistance
 
+InitializeString
+	LDR R0, =A ; Address of the array
+	MOV R1, #67 ; Character C
+	STRB R1, [R0], #1 ; Store letter into first element of array
+	
+	MOV R1, #97 ; Character a
+	STRB R1, [R0], #1 ; Store letter into second element of array
+	
+	MOV R1, #101 ; Character e
+	STRB R1, [R0], #1 ; Store letter into third element of array
+	
+	MOV R1, #115 ; Character s
+	STRB R1, [R0], #1 ; Store letter into fourth element of array
+	
+	MOV R1, #97 ; Character a
+	STRB R1, [R0], #1 ; Store letter into fifth element of array
+	
+	MOV R1, #114 ; Character r
+	STRB R1, [R0], #1 ; Store letter into sixth element of array
+	BX LR
 
 loop   B    loop
 
@@ -82,19 +104,17 @@ ProductLoop
 	BXEQ LR ; If our counter is zero, we go back to the caller, we're done!
 	B ProductLoop ; Continue looping otherwise.
 
-; Performs Caesar shift encryption on a single
-; letter.
+; Performs Caesar shift encryption on a given string.
 ; Parameters:
-; R0: The letter to shift (0 - 25, which corresponds to A through Z)
-; R1: The shift amount
-; Return value:
-; The encrypted letter (R0)
+; R0: The address to the string to encrypt
+; R1: The shift length
+; No return value, the string will
+; be encrypted in place.
 CaesarShift
-	ADD R0, R1
-	CMP R0, #25 ; Compare R0 to 25, corresponding to Z
-	; If R0 is greater than 25, roll back over
-	; to the beginning of the alphabet.
-	SUBHI R0, #25
+CaesarLoop
+	LDRB R2, [R0], #1 ; Read the value at R0 into R1
+	CMP R2, #0
+	BNE CaesarLoop
 	BX LR
 
 ; Calculates the movie ticket price
