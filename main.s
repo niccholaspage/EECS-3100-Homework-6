@@ -125,20 +125,22 @@ CaesarLoop
 	; a letter after it, handle lowercase
 	; rollover.
 	BHS LowercaseCheck
+	; We now do an uppercase check since we
+	; know we have an uppercase letter.
 	CMP R2, #90 ; Compare R2 to 90, corresponding to Z
 	; If R2 is greater than 90, roll back over
 	; to the beginning of the alphabet.
 	SUBHI R2, #26
-	B ContinueCaesar
+	B ContinueCaesar ; Continue our subroutine.
 LowercaseCheck
 	CMP R2, #122 ; Compare R2 to 122, corresponding to z
 	; If R2 is greater than 122, roll back over
 	; to the beginning of the alphabet.
 	SUBHI R2, #26
 ContinueCaesar
-	STRB R2, [R0]
-	ADD R0, #1 ; Add 1 byte to R0 so we can get the next character
-	B CaesarLoop
+	STRB R2, [R0] ; Store the byte at R2 into the address at R0.
+	ADD R0, #1 ; Add 1 byte to R0 so we continue to the next character.
+	B CaesarLoop ; Continue our loop!
 
 ; Calculates the movie ticket price
 ; based on the given age. If the age
