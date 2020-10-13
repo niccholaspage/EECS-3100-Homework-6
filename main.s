@@ -119,11 +119,23 @@ CaesarLoop
 	LDRB R2, [R0] ; Read the value at R0 into R1
 	CMP R2, #0 ; Compare it to 0
 	BXEQ LR ; If we have reached the null-termination character, lets exit
+	CMP R2, #97 ; Compare R2 to lowercase a
 	ADD R2, R1 ; Shift R2 by R1 characters
+	; If the original letter is a or
+	; a letter after it, handle lowercase
+	; rollover.
+	BHS LowercaseCheck
 	CMP R2, #90 ; Compare R2 to 90, corresponding to Z
 	; If R2 is greater than 90, roll back over
 	; to the beginning of the alphabet.
 	SUBHI R2, #26
+	B ContinueCaesar
+LowercaseCheck
+	CMP R2, #122 ; Compare R2 to 122, corresponding to z
+	; If R2 is greater than 122, roll back over
+	; to the beginning of the alphabet.
+	SUBHI R2, #26
+ContinueCaesar
 	STRB R2, [R0]
 	ADD R0, #1 ; Add 1 byte to R0 so we can get the next character
 	B CaesarLoop
