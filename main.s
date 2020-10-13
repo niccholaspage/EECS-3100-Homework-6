@@ -2,7 +2,7 @@
 ; main.s
 ; Author: Nicholas Nassar
 ; Date Created: 10/11/2020
-; Last Modified: 10/11/2020
+; Last Modified: 10/13/2020
 ; Section Number: Lecture 001, Lab 002
 ; Instructor: Devinder Kaur
 ; Homework Number: 6
