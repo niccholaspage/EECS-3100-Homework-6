@@ -105,6 +105,10 @@ ProductLoop
 	B ProductLoop ; Continue looping otherwise.
 
 ; Performs Caesar shift encryption on a given string.
+; The string must be ASCII characters ranging from
+; a-z OR A-Z. UNDEFINED BEHAVIOR occurs if you pass
+; in a string with other characters outside of the
+; alphabet.
 ; Parameters:
 ; R0: The address to the string to encrypt
 ; R1: The shift length
@@ -112,10 +116,17 @@ ProductLoop
 ; be encrypted in place.
 CaesarShift
 CaesarLoop
-	LDRB R2, [R0], #1 ; Read the value at R0 into R1
-	CMP R2, #0
-	BNE CaesarLoop
-	BX LR
+	LDRB R2, [R0] ; Read the value at R0 into R1
+	CMP R2, #0 ; Compare it to 0
+	BXEQ LR ; If we have reached the null-termination character, lets exit
+	ADD R2, R1 ; Shift R2 by R1 characters
+	CMP R2, #90 ; Compare R2 to 90, corresponding to Z
+	; If R2 is greater than 90, roll back over
+	; to the beginning of the alphabet.
+	SUBHI R2, #26
+	STRB R2, [R0]
+	ADD R0, #1 ; Add 1 byte to R0 so we can get the next character
+	B CaesarLoop
 
 ; Calculates the movie ticket price
 ; based on the given age. If the age
